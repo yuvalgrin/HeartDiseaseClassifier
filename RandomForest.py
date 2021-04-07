@@ -1,5 +1,6 @@
-import torch
+import numpy as np
 import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -7,78 +8,57 @@ from sklearn.metrics import accuracy_score
 from CsvLoader import CsvLoader
 
 
-def cross_validator(params, dtrain, num_boost_round):
+def cross_validator(X_train, y_train, X_test, y_test):
     # This can take some time…
-    min_mae = float("Inf")
-    best_params = None
-    for eta in [.3, .2, .1, .05, .01, .005]:
-        print("CV with eta={}".format(eta))
-        # We update our parameters
-        params['eta'] = eta
-        # Run and time CV
-        cv_results = xgb.cv(
-            params,
-            dtrain,
-            num_boost_round=num_boost_round,
-            seed=42,
-            nfold=5,
-            metrics=['mae'],
-            early_stopping_rounds=10
-        )
-        # Update best score
-        mean_mae = cv_results['test-mae-mean'].min()
-        boost_rounds = cv_results['test-mae-mean'].argmin()
-        print("\tMAE {} for {} rounds\n".format(mean_mae, boost_rounds))
-        if mean_mae < min_mae:
-            min_mae = mean_mae
-            best_params = eta
-    print("Best params: {}, MAE: {}".format(best_params, min_mae))
+
+    best_depth = 0
+    best_estimator = 0
+    best_acc = float("Inf")
+    for estimator in range(0, 20):
+        for depth in range(0, 20):
+            model = RandomForestClassifier(max_depth=8, n_estimators=20)
+            model.fit(X_train, y_train)
+            mean = 0
+            for i in range(4):
+                y_pred = model.predict(X_test)
+                predictions = [round(value) for value in y_pred]
+
+                # evaluate predictions
+                mean += accuracy_score(y_test, predictions)
+            mean = mean / 4
+            print("Accuracy: %.2f%%" % (mean * 100.0))
+
+            # Update best score
+            if mean < best_acc:
+                best_acc = mean
+                best_depth = depth
+                best_estimator = estimator
+                print("Best depth: {}, estimator: {}, accuracy: {}".format(best_depth, best_estimator, best_acc))
+
+    print("Best depth: {}, estimator: {}, accuracy: {}".format(best_depth, best_estimator, best_acc))
 
 
 def main():
     """ Main logic """
     file = 'simulated HF mort data for GMPH (1K) final.csv'
-    train_data_set = CsvLoader(file)
+    data_set = CsvLoader(file)
 
     # split data into train and test sets
     seed = 7
     test_size = 0.2
-    X_train, X_test, y_train, y_test = train_test_split(train_data_set.x_train, train_data_set.y_train,
+    X_train, X_test, y_train, y_test = train_test_split(data_set.x_train, data_set.y_train,
                                                         test_size=test_size, random_state=seed)
-
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test, label=y_test)
-    num_boost_round = 500
-    params = {
-        # Parameters that we are going to tune.
-        'max_depth': 6,
-        'min_child_weight': 0,
-        'eta': .003,
-        'subsample': 1,
-        'colsample_bytree': 1,
-        # Other parameters
-        'objective': 'reg:linear',
-    }
-    model = xgb.train(
-        params,
-        dtrain,
-        num_boost_round=num_boost_round,
-        evals=[(dtest, "Test")],
-        early_stopping_rounds=10
-    )
-    print("Best MAE: {:.2f} in {} rounds".format(model.best_score, model.best_iteration + 1))
-
-    # fit model no training data
-    # model = XGBClassifier(use_label_encoder=False,
-    #                       n_estimators=75,
-    #                       max_depth=5,
-    #                       random_state=seed)
-    # model.train(params, X_train, y_train, num_boost_round=num_boost_round)
-
-    # make predictions for test data
-    y_pred = model.predict(dtest)
-    predictions = [round(value) for value in y_pred]
+    X_train = np.nan_to_num(X_train)
+    X_test = np.nan_to_num(X_test)
+    cross_validator(X_train, y_train, X_test, y_test)
+    # model = RandomForestClassifier(max_depth=24, n_estimators=25)
+    # model.fit(X_train, y_train)
+    # # print(model.score(X_test, y_test))
+    #
+    # # make predictions for test data
+    # y_pred = model.predict(X_test)
+    # predictions = [round(value) for value in y_pred]
     #
     # # evaluate predictions
-    accuracy = accuracy_score(y_test, predictions)
-    print("Accuracy: %.2f%%" % (accuracy * 100.0))
+    # accuracy = accuracy_score(y_test, predictions)
+    # print("Accuracy: %.2f%%" % (accuracy * 100.0))
