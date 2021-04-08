@@ -36,10 +36,6 @@ def cross_validator(params, dtrain, num_boost_round):
 
 
 def main(data_set):
-    """ Main logic """
-    file = 'simulated HF mort data for GMPH (1K) final.csv'
-    data_set = CsvLoader(file)
-
     # split data into train and test sets
     seed = 7
     test_size = 0.1

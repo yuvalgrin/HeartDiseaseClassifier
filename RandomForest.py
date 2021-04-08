@@ -39,7 +39,6 @@ def cross_validator(X_train, y_train, X_test, y_test):
 
 
 def main(data_set):
-
     # split data into train and test sets
     seed = 7
     test_size = 0.2
