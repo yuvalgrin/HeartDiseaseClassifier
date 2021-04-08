@@ -77,11 +77,7 @@ def cross_validator(params, dtrain, num_boost_round):
             best_params = eta
     print("Best params: {}, MAE: {}".format(best_params, min_mae))
 
-def main():
-    """ Main logic """
-    file = 'simulated HF mort data for GMPH (1K) final.csv'
-    train_data_set = CsvLoader(file)
-
+def main(data_set):
     # split data into train and test sets
     seed = 7
     test_size = 0.2

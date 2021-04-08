@@ -38,10 +38,7 @@ def cross_validator(X_train, y_train, X_test, y_test):
     print("Best depth: {}, estimator: {}, accuracy: {}".format(best_depth, best_estimator, best_acc))
 
 
-def main():
-    """ Main logic """
-    file = 'simulated HF mort data for GMPH (1K) final.csv'
-    data_set = CsvLoader(file)
+def main(data_set):
 
     # split data into train and test sets
     seed = 7
@@ -50,15 +47,15 @@ def main():
                                                         test_size=test_size, random_state=seed)
     X_train = np.nan_to_num(X_train)
     X_test = np.nan_to_num(X_test)
-    cross_validator(X_train, y_train, X_test, y_test)
-    # model = RandomForestClassifier(max_depth=24, n_estimators=25)
-    # model.fit(X_train, y_train)
-    # # print(model.score(X_test, y_test))
-    #
-    # # make predictions for test data
-    # y_pred = model.predict(X_test)
-    # predictions = [round(value) for value in y_pred]
-    #
-    # # evaluate predictions
-    # accuracy = accuracy_score(y_test, predictions)
-    # print("Accuracy: %.2f%%" % (accuracy * 100.0))
+    # cross_validator(X_train, y_train, X_test, y_test)
+    model = RandomForestClassifier(max_depth=24, n_estimators=25)
+    model.fit(X_train, y_train)
+    # print(model.score(X_test, y_test))
+
+    # make predictions for test data
+    y_pred = model.predict(X_test)
+    predictions = [round(value) for value in y_pred]
+
+    # evaluate predictions
+    accuracy = accuracy_score(y_test, predictions)
+    print("Accuracy: %.2f%%" % (accuracy * 100.0))
