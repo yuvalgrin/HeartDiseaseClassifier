@@ -3,6 +3,7 @@ import torch.utils.data as data
 from sklearn.preprocessing import StandardScaler
 
 
+# Data loader that we implemented to use the data from our CSV file
 class CsvLoader(data.Dataset):
     def __init__(self, file):
         file_out = pd.read_csv(file)

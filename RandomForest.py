@@ -7,10 +7,8 @@ from sklearn.metrics import accuracy_score
 
 from CsvLoader import CsvLoader
 
-
+# Validate the
 def cross_validator(X_train, y_train, X_test, y_test):
-    # This can take some time…
-
     best_depth = 0
     best_estimator = 0
     best_acc = float("Inf")
@@ -46,15 +44,18 @@ def main(data_set):
                                                         test_size=test_size, random_state=seed)
     X_train = np.nan_to_num(X_train)
     X_test = np.nan_to_num(X_test)
-    # cross_validator(X_train, y_train, X_test, y_test)
+
+    # Create and train the model
     model = RandomForestClassifier(max_depth=24, n_estimators=25)
     model.fit(X_train, y_train)
-    # print(model.score(X_test, y_test))
 
-    # make predictions for test data
+    # Use cross validation to find the best Hyper-parameters
+    # cross_validator(X_train, y_train, X_test, y_test)
+
+    # Make predictions for test data
     y_pred = model.predict(X_test)
     predictions = [round(value) for value in y_pred]
 
-    # evaluate predictions
+    # Evaluate the model predictions
     accuracy = accuracy_score(y_test, predictions)
     print("Accuracy: %.2f%%" % (accuracy * 100.0))

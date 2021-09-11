@@ -12,6 +12,7 @@ from CsvLoader import CsvLoader
 
 
 def main(data_set):
+    # Split data into train and test sets
     seed = 7
     test_size = 0.1
     X_train, X_test, y_train, y_test = train_test_split(data_set.x_train, data_set.y_train,
@@ -19,13 +20,14 @@ def main(data_set):
     X_train = np.nan_to_num(X_train)
     X_test = np.nan_to_num(X_test)
 
-    model = svm.SVC(kernel='linear', C=1.0)  # Our model
+    # Create and train the model
+    model = svm.SVC(kernel='linear', C=1.0)
     model.fit(X_train, y_train)
 
-    # make predictions for test data
+    # Make predictions for test data
     y_pred = model.predict(X_test)
     predictions = [round(value) for value in y_pred]
-    #
-    # # evaluate predictions
+
+    # Evaluate predictions
     accuracy = accuracy_score(y_test, predictions)
     print("Accuracy: %.2f%%" % (accuracy * 100.0))

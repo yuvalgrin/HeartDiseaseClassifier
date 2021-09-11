@@ -13,9 +13,8 @@ def cross_validator(params, dtrain, num_boost_round):
     best_params = None
     for eta in [.3, .2, .1, .05, .01, .005]:
         print("CV with eta={}".format(eta))
-        # We update our parameters
+        # Update parameters
         params['eta'] = eta
-        # Run and time CV
         cv_results = xgb.cv(
             params,
             dtrain,
@@ -32,11 +31,11 @@ def cross_validator(params, dtrain, num_boost_round):
         if mean_mae < min_mae:
             min_mae = mean_mae
             best_params = eta
-    print("Best params: {}, MAE: {}".format(best_params, min_mae))
+    print("Best params: {}, mean absolute error: {}".format(best_params, min_mae))
 
 
 def main(data_set):
-    # split data into train and test sets
+    # Split data into train and test sets
     seed = 7
     test_size = 0.1
     X_train, X_test, y_train, y_test = train_test_split(data_set.x_train, data_set.y_train,
@@ -46,7 +45,7 @@ def main(data_set):
     dtest = xgb.DMatrix(X_test, label=y_test)
     num_boost_round = 500
     params = {
-        # Parameters that we are going to tune.
+        # Parameters that we are going to tune
         'max_depth': 6,
         'min_child_weight': 0,
         'eta': .003,
@@ -62,19 +61,15 @@ def main(data_set):
         evals=[(dtest, "Test")],
         early_stopping_rounds=10
     )
-    print("Best MAE: {:.2f} in {} rounds".format(model.best_score, model.best_iteration + 1))
+    print("Best mean absolute error: {:.2f} in {} rounds".format(model.best_score, model.best_iteration + 1))
 
-    # fit model no training data using XGBClassifier
-    # model = XGBClassifier(use_label_encoder=False,
-    #                       n_estimators=75,
-    #                       max_depth=5,
-    #                       random_state=seed)
-    # model.train(params, X_train, y_train, num_boost_round=num_boost_round)
+    # Use cross validation to find the best Hyper-parameters
+    # cross_validator(X_train, y_train, X_test, y_test)
 
-    # make predictions for test data
+    # Make predictions for test data
     y_pred = model.predict(dtest)
     predictions = [round(value) for value in y_pred]
 
-    # evaluate predictions
+    # Evaluate the model predictions
     accuracy = accuracy_score(y_test, predictions)
     print("Accuracy: %.2f%%" % (accuracy * 100.0))
