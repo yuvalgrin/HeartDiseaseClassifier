@@ -1,7 +1,5 @@
 import numpy as np
-import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 

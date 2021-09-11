@@ -1,9 +1,4 @@
 import numpy as np
-import torch
-import xgboost as xgb
-from torch import optim
-from torch.autograd import Variable
-from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn import svm
