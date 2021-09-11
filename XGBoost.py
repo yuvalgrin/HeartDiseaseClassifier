@@ -2,8 +2,6 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-from CsvLoader import CsvLoader
-
 
 def cross_validator(params, dtrain, num_boost_round):
     # This can take some time…
@@ -70,4 +68,4 @@ def main(data_set):
 
     # Evaluate the model predictions
     accuracy = accuracy_score(y_test, predictions)
-    print("Accuracy: %.2f%%" % (accuracy * 100.0))
+    print("XGBoost accuracy: %.2f%%" % (accuracy * 100.0))

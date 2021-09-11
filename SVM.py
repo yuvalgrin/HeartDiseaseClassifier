@@ -25,4 +25,4 @@ def main(data_set):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test, predictions)
-    print("Accuracy: %.2f%%" % (accuracy * 100.0))
+    print("SVM accuracy: %.2f%%" % (accuracy * 100.0))
